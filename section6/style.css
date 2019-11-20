@@ -1,0 +1,32 @@
+body {
+  background-image: url('../firstWebsite/17365077.jpeg');
+  background-size: cover;
+}
+h2 {
+  color: red;
+  text-align: center;
+  border: 5px solid purple;
+  cursor: crosshair;
+}
+
+p {
+  text-decoration: underline;
+  text-transform: lowercase;
+  line-height: 20px;
+  font-style: italic;
+  font-weight: bold;
+  font-size: 80%;
+  font-family: 'Yeon Sung', cursive;
+  color: pink;
+}
+img {
+  float: right;
+}
+footer {
+  clear: both;
+}
+
+li {
+  list-style: none;
+  display: inline-block;
+}
