@@ -34,5 +34,56 @@ console.log(
   cleanTheRoom([1, 2, 4, 591, 392, 391, 2, 5, 10, 2, 1, 1, 1, 20, 20])
 );
 //Question 2: Write a javascript function that takes an array of numbers and a target number. The function should find two different numbers in the array that, when added together, give the target number. For example: answer([1,2,3], 4)should return [1,3]
-
+const addendFinder = (arrayOfPossibleAddends, desiredResultant) => {
+  // Returns first found addend Pair; N^2 Time,
+  const { length } = arrayOfPossibleAddends;
+  for (let i = 0; i < length; i++) {
+    const addendOne = arrayOfPossibleAddends[i];
+    for (let j = i + 1; j < length; j++) {
+      const addendTwo = arrayOfPossibleAddends[j];
+      if (addendOne + addendTwo === desiredResultant)
+        return [addendOne, addendTwo];
+    }
+  }
+  return undefined;
+};
+const addendPairs = addendFinder([1, 2, 3], 4);
+console.log({ addendPairs });
 //Question 3: Write a function that converts HEX to RGB. Then Make that function auto-dect the formats so that if you enter HEX color format it returns RGB and if you enter RGB color format it returns HEX.
+//Assuming: input type is string and rgb is either space or comma delimited;
+const colorConverter = colorString => {
+  // valid hex -> [0 - 9,a,b,c,d,f] * 6 characters
+  const validHEXRegEx = /^([0-9abcdef]{2})([0-9abcdef]{2})([0-9abcdef]{2})$/i;
+
+  const foundHEX = colorString.match(validHEXRegEx);
+  if (foundHEX) {
+    const getRGB = (r, g, b) =>
+      [r, g, b]
+        .reduce(
+          (RGBAcc, color) => [...RGBAcc, parseInt(color, 16).toString(10)],
+          []
+        )
+        .join(',');
+    const [_, r, g, b] = foundHEX;
+    return getRGB(r, g, b);
+  }
+
+  // valid RGB -> 0 - 255 , 0 - 255 , 0 - 255
+  const validRGBRegEx = /^(0{1,3}|1[0-9]{0,2}|2[0-4][0-9]|25[0-5])[,\ ](0{1,3}|1[0-9]{0,2}|2[0-4][0-9]|25[0-5])[,\ ](0{1,3}|1[0-9]{0,2}|2[0-4][0-9]|25[0-5])$/i;
+  const foundRGB = colorString.match(validRGBRegEx);
+  if (foundRGB) {
+    const getHex = (r, g, b) =>
+      [r, g, b]
+        .reduce(
+          (hexAcc, color) => [...hexAcc, parseInt(color, 10).toString(16)],
+          []
+        )
+        .join('');
+    const [_, r, g, b] = foundRGB;
+    return getHex(r, g, b);
+  }
+
+  console.log('invalid input');
+};
+console.log(colorConverter('255,255,255'));
+console.log(colorConverter('ffffff'));
