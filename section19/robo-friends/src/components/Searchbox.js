@@ -5,7 +5,7 @@ export default function Searchbox({ searchChange }) {
     <input
       type="search"
       placeholder="search robot names"
-      onChange={event => searchChange(event.target.value)}
+      onChange={event => searchChange(event)}
     />
   );
 }
