@@ -1,7 +1,24 @@
-const http = require('http');
+const express = require('express');
+const app = express();
 
-const server = http.createServer(() => {
-  console.log('I hear you!. thanks for the request');
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(express.static(__dirname + '/public'));
+app.get('/', (req, res) => {
+  console.log('recieved request');
+  const user = {
+    name: 'Sally',
+    hobby: 'soccer'
+  };
+  res.send(user);
 });
 
-server.listen(3000);
+app.post('/profile', (req, res) => {
+  console.log('recieved request', req.body);
+  const user = {
+    name: 'Sally',
+    hobby: 'soccer'
+  };
+  res.send(user);
+});
+app.listen(3000);
