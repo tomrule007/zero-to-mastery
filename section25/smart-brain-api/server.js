@@ -1,4 +1,7 @@
 const express = require('express');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+
 const app = express();
 const database = {
   users: [
@@ -30,25 +33,42 @@ app.get('/', (req, res) => {
 app.post('/signin', (req, res) => {
   const { email, password } = req.body;
   const user = database.users.find(user => user.email === email);
-  if (user && user.password === password) {
-    // should not be sending password back
-    res.json(user);
-  } else res.status(400).send('Invalid Password or Email');
+  console.log({ password });
+  bcrypt
+    .compare(password, user.hash)
+    .then(match => {
+      console.log({ match });
+      if (match) {
+        // should not be sending password or hash back
+        res.json(user);
+      } else {
+        res.status(400).send('Invalid Password or Email');
+      }
+    })
+    .catch(console.log);
 });
 app.post('/register', (req, res) => {
   const { name, email, password } = req.body;
   if (!name || !email || !password)
     res.status(400).send('Missing Required Parameter');
-  const newUser = {
-    id: database.users.length,
-    name,
-    email,
-    password,
-    entries: 0,
-    joined: new Date()
-  };
-  database.push(newUser);
-  res.json(newUser);
+
+  bcrypt
+    .hash(password, saltRounds)
+    .then(hash => {
+      console.log({ hash });
+      const newUser = {
+        id: database.users.length,
+        name,
+        email,
+        hash,
+        entries: 0,
+        joined: new Date()
+      };
+      database.users.push(newUser);
+      // should not be sending password or hash back
+      res.json(newUser);
+    })
+    .catch(console.log);
 });
 app.get('/profile/:userId', (req, res) => {
   const { userId } = req.params;
