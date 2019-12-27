@@ -9,8 +9,8 @@ const database = {
     {
       id: '123',
       name: 'tom',
-      email: 'tom@tom.com',
-      password: 123,
+      email: 'tommy@tom.com',
+      hash: '$2b$10$AwVAJP7KbYMPrTAxUNQLD.CC31y5qcfWJVAiR/xBifwtWX2lSRMYC',
       entries: 0,
       joined: new Date()
     },
