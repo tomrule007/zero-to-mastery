@@ -36,19 +36,23 @@ app.get('/', (req, res) => {
 app.post('/signin', (req, res) => {
   const { email, password } = req.body;
   const user = database.users.find(user => user.email === email);
-  console.log({ password });
-  bcrypt
-    .compare(password, user.hash)
-    .then(match => {
-      console.log({ match });
-      if (match) {
-        // should not be sending password or hash back
-        res.json(user);
-      } else {
-        res.status(400).send('Invalid Password or Email');
-      }
-    })
-    .catch(console.log);
+  console.log({ password, email });
+  if (user) {
+    bcrypt
+      .compare(password, user.hash)
+      .then(match => {
+        console.log({ match });
+        if (match) {
+          // should not be sending password or hash back
+          res.json('success');
+        } else {
+          res.status(400).send('Invalid Password or Email');
+        }
+      })
+      .catch(console.log);
+  } else {
+    res.status(400).send('Invalid Password or Email');
+  }
 });
 app.post('/register', (req, res) => {
   const { name, email, password } = req.body;
