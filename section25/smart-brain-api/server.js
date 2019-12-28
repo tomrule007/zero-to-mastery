@@ -56,26 +56,34 @@ app.post('/signin', (req, res) => {
 });
 app.post('/register', (req, res) => {
   const { name, email, password } = req.body;
-  if (!name || !email || !password)
-    res.status(400).send('Missing Required Parameter');
+  console.log({ name, email, password });
+  if (!name || !email || !password) {
+    res.status(400).json('Missing Required Parameter');
+  } else {
+    const userAlreadyExists = database.users.find(user => user.email === email);
 
-  bcrypt
-    .hash(password, saltRounds)
-    .then(hash => {
-      console.log({ hash });
-      const newUser = {
-        id: database.users.length,
-        name,
-        email,
-        hash,
-        entries: 0,
-        joined: new Date()
-      };
-      database.users.push(newUser);
-      // should not be sending password or hash back
-      res.json(newUser);
-    })
-    .catch(console.log);
+    if (userAlreadyExists) {
+      res.status(400).json('User is already registered');
+    } else {
+      bcrypt
+        .hash(password, saltRounds)
+        .then(hash => {
+          console.log({ hash });
+          const newUser = {
+            id: database.users.length,
+            name,
+            email,
+            hash,
+            entries: 0,
+            joined: new Date()
+          };
+          database.users.push(newUser);
+          // should not be sending password or hash back
+          res.json(newUser);
+        })
+        .catch(console.log);
+    }
+  }
 });
 app.get('/profile/:userId', (req, res) => {
   const { userId } = req.params;
