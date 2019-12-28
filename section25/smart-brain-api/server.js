@@ -26,6 +26,10 @@ const database = {
   ]
 };
 
+const removeHash = obj => {
+  const { hash, ...noHash } = obj;
+  return noHash;
+};
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cors());
@@ -43,8 +47,7 @@ app.post('/signin', (req, res) => {
       .then(match => {
         console.log({ match });
         if (match) {
-          // should not be sending password or hash back
-          res.json('success');
+          res.json(removeHash(user));
         } else {
           res.status(400).send('Invalid Password or Email');
         }
@@ -78,8 +81,7 @@ app.post('/register', (req, res) => {
             joined: new Date()
           };
           database.users.push(newUser);
-          // should not be sending password or hash back
-          res.json(newUser);
+          res.json(removeHash(newUser));
         })
         .catch(console.log);
     }
