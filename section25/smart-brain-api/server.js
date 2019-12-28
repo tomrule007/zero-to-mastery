@@ -97,14 +97,16 @@ app.get('/profile/:userId', (req, res) => {
 });
 
 app.put('/image', (req, res) => {
-  const { userId } = req.body;
-  console.log({ userId });
-  const userIndex = database.users.findIndex(user => user.id === userId);
+  const { id } = req.body;
+  console.log(id);
+  const userIndex = database.users.findIndex(user => user.id === id);
   console.log({ userIndex });
   if (userIndex === -1) res.status(404).send('User Not Found');
   console.log(database.users[userIndex]);
-  const entries = database.users[userIndex].entries++;
-  res.json(entries);
+
+  database.users[userIndex].entries = database.users[userIndex].entries + 1;
+  console.log(database.users[userIndex].entries);
+  res.json(database.users[userIndex].entries);
 });
 app.listen(3000, () => {
   console.log('app is running on port 3000');
