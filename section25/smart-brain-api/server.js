@@ -85,24 +85,27 @@ app.post('/register', (req, res) => {
 });
 app.get('/profile/:userId', (req, res) => {
   const { userId } = req.params;
-  const user = database.users.find(user => user.id === userId);
-  if (!user) res.status(404).send('User Not Found');
-
-  // Should never send passwords
-  res.json(user);
+  knex('users')
+    .select('*')
+    .where({ id: userId })
+    .then(user => {
+      if (user.length) res.json(user);
+      res.status(400).json('Error User Not Found');
+    })
+    .catch(console.log);
 });
 
 app.put('/image', (req, res) => {
   const { id } = req.body;
-  console.log(id);
-  const userIndex = database.users.findIndex(user => user.id === id);
-  console.log({ userIndex });
-  if (userIndex === -1) res.status(404).send('User Not Found');
-  console.log(database.users[userIndex]);
-
-  database.users[userIndex].entries = database.users[userIndex].entries + 1;
-  console.log(database.users[userIndex].entries);
-  res.json(database.users[userIndex].entries);
+  knex('users')
+    .where({ id })
+    .increment('entries', 1)
+    .returning('entries')
+    .then(entries => {
+      if (entries.length) res.json(entries[0]);
+      res.status(400).send('User Not Found');
+    })
+    .catch(console.log);
 });
 app.listen(3000, () => {
   console.log('app is running on port 3000');
