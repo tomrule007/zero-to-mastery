@@ -117,8 +117,11 @@ app.put('/image', (req, res) => {
     .increment('entries', 1)
     .returning('entries')
     .then(entries => {
-      if (entries.length) res.json(entries[0]);
-      res.status(400).json('User Not Found');
+      if (entries.length) {
+        res.json(entries[0]);
+      } else {
+        res.status(400).json('User Not Found');
+      }
     })
     .catch(console.log);
 });
