@@ -63,13 +63,13 @@ app.post('/signin', (req, res) => {
             .where({ email: data[0].email })
             .then(user => res.json(user[0]));
         } else {
-          res.status(400).send('Invalid Password or Email');
+          res.status(400).json('Invalid Password or Email');
         }
       });
     })
     .catch(err => {
       console.log(err);
-      res.status(400).send('Invalid Password or Email');
+      res.status(400).json('Invalid Password or Email');
     });
 });
 app.post('/register', (req, res) => {
@@ -118,7 +118,7 @@ app.put('/image', (req, res) => {
     .returning('entries')
     .then(entries => {
       if (entries.length) res.json(entries[0]);
-      res.status(400).send('User Not Found');
+      res.status(400).json('User Not Found');
     })
     .catch(console.log);
 });
