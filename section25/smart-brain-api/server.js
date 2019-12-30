@@ -50,23 +50,27 @@ app.get('/', (req, res) => {
 });
 app.post('/signin', (req, res) => {
   const { email, password } = req.body;
-  const user = database.users.find(user => user.email === email);
-  console.log({ password, email });
-  if (user) {
-    bcrypt
-      .compare(password, user.hash)
-      .then(match => {
+  knex('login')
+    .where({ email })
+    .returning('hash')
+    .then(data => {
+      console.log({ data });
+      return bcrypt.compare(password, data[0].hash).then(match => {
         console.log({ match });
         if (match) {
-          res.json(removeHash(user));
+          knex('users')
+            .select('*')
+            .where({ email: data[0].email })
+            .then(user => res.json(user));
         } else {
           res.status(400).send('Invalid Password or Email');
         }
-      })
-      .catch(console.log);
-  } else {
-    res.status(400).send('Invalid Password or Email');
-  }
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(400).send('Invalid Password or Email');
+    });
 });
 app.post('/register', (req, res) => {
   const { name, email, password } = req.body;
