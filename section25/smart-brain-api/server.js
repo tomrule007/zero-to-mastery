@@ -61,7 +61,7 @@ app.post('/signin', (req, res) => {
           knex('users')
             .select('*')
             .where({ email: data[0].email })
-            .then(user => res.json(user));
+            .then(user => res.json(user[0]));
         } else {
           res.status(400).send('Invalid Password or Email');
         }
@@ -87,7 +87,7 @@ app.post('/register', (req, res) => {
             trx('users')
               .returning('*')
               .insert({ email: loginEmail[0], name, joined: new Date() })
-              .then(newUser => res.json(newUser))
+              .then(newUser => res.json(newUser[0]))
           )
           .then(trx.commit)
           .catch(trx.rollback);
@@ -104,7 +104,7 @@ app.get('/profile/:userId', (req, res) => {
     .select('*')
     .where({ id: userId })
     .then(user => {
-      if (user.length) res.json(user);
+      if (user.length) res.json(user[0]);
       res.status(400).json('Error User Not Found');
     })
     .catch(console.log);
