@@ -1,6 +1,17 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
+const dotenvConfiged = require('dotenv').config();
+const knex = require('knex')({
+  client: 'pg',
+  connection: {
+    host: '127.0.0.1',
+    user: process.env.PG_DB_USER,
+    password: process.env.PG_DB_PASS,
+    database: 'smart-brain'
+  }
+});
+
 const saltRounds = 10;
 
 const app = express();
@@ -60,32 +71,17 @@ app.post('/signin', (req, res) => {
 app.post('/register', (req, res) => {
   const { name, email, password } = req.body;
   console.log({ name, email, password });
-  if (!name || !email || !password) {
-    res.status(400).json('Missing Required Parameter');
-  } else {
-    const userAlreadyExists = database.users.find(user => user.email === email);
-
-    if (userAlreadyExists) {
-      res.status(400).json('User is already registered');
-    } else {
-      bcrypt
-        .hash(password, saltRounds)
-        .then(hash => {
-          console.log({ hash });
-          const newUser = {
-            id: database.users.length,
-            name,
-            email,
-            hash,
-            entries: 0,
-            joined: new Date()
-          };
-          database.users.push(newUser);
-          res.json(removeHash(newUser));
-        })
-        .catch(console.log);
-    }
-  }
+  bcrypt.hash(password, saltRounds).then(hash => {
+    console.log({ hash });
+    knex('users')
+      .returning('*')
+      .insert({ email, name, joined: new Date() })
+      .then(newUser => res.json(newUser))
+      .catch(err => {
+        console.log(err);
+        res.status(400).json('failed to register');
+      });
+  });
 });
 app.get('/profile/:userId', (req, res) => {
   const { userId } = req.params;
