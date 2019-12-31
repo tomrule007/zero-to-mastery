@@ -3,6 +3,8 @@ const bcrypt = require('bcrypt');
 const cors = require('cors');
 const register = require('./controllers/register');
 const signin = require('./controllers/signin');
+const profile = require('./controllers/profile');
+const image = require('./controllers/image');
 
 const dotenvConfiged = require('dotenv').config();
 const knex = require('knex')({
@@ -51,35 +53,12 @@ app.use(cors());
 app.get('/', (req, res) => {
   res.json('this is working');
 });
+
 app.post('/signin', signin.handleSignin(bcrypt, knex));
 app.post('/register', register.handleRegister(bcrypt, saltRounds, knex));
-app.get('/profile/:userId', (req, res) => {
-  const { userId } = req.params;
-  knex('users')
-    .select('*')
-    .where({ id: userId })
-    .then(user => {
-      if (user.length) res.json(user[0]);
-      res.status(400).json('Error User Not Found');
-    })
-    .catch(console.log);
-});
+app.get('/profile/:userId', profile.handleProfile(knex));
+app.put('/image', image.handleImage(knex));
 
-app.put('/image', (req, res) => {
-  const { id } = req.body;
-  knex('users')
-    .where({ id })
-    .increment('entries', 1)
-    .returning('entries')
-    .then(entries => {
-      if (entries.length) {
-        res.json(entries[0]);
-      } else {
-        res.status(400).json('User Not Found');
-      }
-    })
-    .catch(console.log);
-});
 app.listen(3000, () => {
   console.log('app is running on port 3000');
 });
