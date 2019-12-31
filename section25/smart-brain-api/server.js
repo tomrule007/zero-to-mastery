@@ -20,27 +20,6 @@ const knex = require('knex')({
 const saltRounds = 10;
 
 const app = express();
-const database = {
-  users: [
-    {
-      id: '123',
-      name: 'tom',
-      email: 'tommy@tom.com',
-      hash: '$2b$10$AwVAJP7KbYMPrTAxUNQLD.CC31y5qcfWJVAiR/xBifwtWX2lSRMYC',
-      entries: 0,
-      joined: new Date()
-    },
-
-    {
-      id: '124',
-      name: 'rebeccah',
-      email: 'rebeccah@rebeccah.com',
-      password: 124,
-      entries: 0,
-      joined: new Date()
-    }
-  ]
-};
 
 const removeHash = obj => {
   const { hash, ...noHash } = obj;
@@ -62,11 +41,3 @@ app.put('/image', image.handleImage(knex));
 app.listen(3000, () => {
   console.log('app is running on port 3000');
 });
-
-/* Planned Endpoints
-/ --> res = this is working
-/signin --> POST = success/fail
-/register --> POST = user
-/profile/:userId --> GET = user
-/image --> PUT --> user
-*/
